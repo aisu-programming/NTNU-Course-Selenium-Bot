@@ -1,4 +1,5 @@
 account.txt
 
 venv4*
-*.pyc
+__pycache__
+chromedriver_win32/*
