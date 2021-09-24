@@ -3,3 +3,5 @@ account.txt
 venv4*
 __pycache__
 chromedriver_win32/*
+test*
+*.h5
