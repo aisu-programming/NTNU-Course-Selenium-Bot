@@ -1,5 +1,5 @@
 # New-NTNU-Course-Taking-Bot
-For making my program to receive the same validate code image with the website, I wrote this program using python selenium (爬蟲) but not python requests.
+For making my program to receive the same validate code image with the website, I wrote this program using Python selenium (爬蟲) but not Python requests.
 
 This is the only way I found.
 
