@@ -33,3 +33,7 @@ Before execute the program, you will have to install some requirements.
 ## Execution
 
 Just execute the program `main.py`.
+
+## Notice
+
+It's better for you to keep the browser on the top of your desk. Otherwise, it went wrong sometimes and I'm not sure about the reason.
