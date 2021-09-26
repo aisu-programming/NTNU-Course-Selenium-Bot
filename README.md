@@ -4,7 +4,7 @@ For making my program to receive the same validate code image with the website, 
 This is the only way I found.
 
 ## Preparation
-Before execute the program, you will have to install the some requirements.
+Before execute the program, you will have to install some requirements.
 
 1. Webdriver
 
