@@ -1,4 +1,4 @@
-weights_file_path = "model/val_acc.h5"
+weights_file_path = "pat/to/val_acc.h5"
 
 
 # ================================================== #
