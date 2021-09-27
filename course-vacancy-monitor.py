@@ -62,7 +62,7 @@ def send_LineNotification(access_token, message):
     return
 
 
-def course_monitoring(driver, course_ids, access_token=None):
+def course_monitoring(driver, course_ids, access_token):
 
     start_time = time.time()
     if LINE_NOTIFY_BOT: send_LineNotification(access_token, f"\nStart a monitor turn.\nThe course ids list now:\n{course_ids}")
@@ -119,12 +119,14 @@ def main():
     except: return
 
     # Read LINE Notify Bot auth
+    access_token = None
     if LINE_NOTIFY_BOT:
         try   : access_token = read_LineNotifyBot_AccessToken()
         except: return
 
     # Load predict model
-    model = load_MyModel()
+    try   : model = load_MyModel()
+    except: return
     model.summary()
 
     options = webdriver.ChromeOptions()

@@ -146,7 +146,7 @@ def login(driver, username, password, model):
     while True:
         if wait_appeared_element_by_id(driver): break
         else:
-            print(f"{my_time_str()} - Login: Validate code '{validate_code}' incorrect. Retry in 3 seconds.")
+            print(f"{my_time_str()} - Login: Validate code '{validate_code}' incorrect. Retry in 3 seconds.\n")
             time.sleep(3)
             click_and_wait(wait_and_find_element_by_id(driver, "redoValidateCodeButton-btnEl"))  # 「重新產生」按鈕
             wait_and_find_element_by_id(driver, "password-inputEl").send_keys(password)
