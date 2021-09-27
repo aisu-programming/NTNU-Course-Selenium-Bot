@@ -7,6 +7,7 @@ weights_file_path = "path/to/val_acc.h5"
 """ Libraries """
 import os
 import time
+import winsound
 import datetime
 from selenium.common.exceptions import WebDriverException
 from seleniumwire import webdriver
@@ -29,7 +30,7 @@ def read_account():
             if len(lines) < 3: raise Exception
             username   = lines[0].strip('\n')
             password   = lines[1].strip('\n')
-            course_ids = [ id.strip('\n') for id in lines[2:] ]
+            course_ids = list(filter(lambda id: '#' not in id, [ id.strip('\n') for id in lines[2:] ]))
         return username, password, course_ids
     except:
         with open("account.txt", "w", encoding="utf-8") as txt_file:
@@ -44,6 +45,13 @@ class BrowserStuckError(Exception):
 
 class CourseTakenException(Exception):
     pass
+
+
+def beep_sound():
+    for _ in range(5):
+        winsound.Beep(800, 800)
+        time.sleep(0.2)
+    return
 
 
 def click_and_wait(element):
@@ -219,7 +227,7 @@ def course_taking(driver, course_ids, model):
 
                 # 驗證碼: 正確 或 錯誤
                 while True:
-                    condition = wait_element_text_by_id(driver, "messagebox-1001-displayfield-inputEl", ["驗證碼錯誤", "額滿", "儲存成功"])
+                    condition = wait_element_text_by_id(driver, "messagebox-1001-displayfield-inputEl", ["驗證碼錯誤", "額滿", "衝堂", "重複登記", "儲存成功"])
                     if condition == 0:
                         print(f"{my_time_str(start_time)} - Course {course_id}: Validate code '{validate_code}' incorrect. Retry in 3 seconds.")
                         click_and_wait(wait_and_find_element_by_id(driver, "button-1005-btnIconEl"))  # 「OK」按鈕
@@ -251,7 +259,20 @@ def course_taking(driver, course_ids, model):
                         break
 
                     elif condition == 2:
+                        print(f"{my_time_str(start_time)} - Course {course_id}: Validate code '{validate_code}' correct. Conflict.")
+                        beep_sound()
+                        course_ids.remove(course_id)
+                        break
+
+                    elif condition == 3:
+                        print(f"{my_time_str(start_time)} - Course {course_id}: Validate code '{validate_code}' correct. Duplicated.")
+                        beep_sound()
+                        course_ids.remove(course_id)
+                        break
+
+                    elif condition == 4:
                         print(f"{my_time_str(start_time)} - Course {course_id}: Validate code '{validate_code}' correct. Success!")
+                        beep_sound()
                         course_ids.remove(course_id)
                         break
                 
