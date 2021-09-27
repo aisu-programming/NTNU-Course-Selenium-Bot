@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 from PIL import Image
 
@@ -150,9 +151,15 @@ def resize_image(img):
     return Image.open(img).convert('L').resize((resize_width, resize_height))
 
 
-def load_MyModel(h5_filepath):
-    dropout_rate = 0.955
-    model = MyModel(dropout_rate)
-    model.build(input_shape=(None, resize_height, resize_width, 1))
-    model.load_weights(h5_filepath)
-    return model
+def load_MyModel():
+    if "val_acc.h5" not in os.listdir("weights"):
+        print("Please download the weights file (val_acc.h5) first at here:\n" + 
+              "https://drive.google.com/file/d/1qdB1SECI-cwqbUQNbJ834EcRAX07i4Z5/view?usp=sharing\n" + 
+              "And make sure that you put it in the directory 'weights'.")
+        return
+    else:
+        dropout_rate = 0.955
+        model = MyModel(dropout_rate)
+        model.build(input_shape=(None, resize_height, resize_width, 1))
+        model.load_weights("weights/val_acc.h5")
+        return model

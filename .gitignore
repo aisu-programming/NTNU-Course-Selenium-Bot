@@ -1,7 +1,10 @@
-account.txt
-
 venv4*
 __pycache__
-chromedriver_win32/*
+
 test*
+
+account.txt
+
+*.zip
+*.exe
 *.h5
