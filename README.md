@@ -1,9 +1,11 @@
-# New-NTNU-Course-Taking-Bot
+# NTNU-Course-Selenium-Bot
 For making my program to receive the same validate code image with the website, I wrote this program using Python selenium (爬蟲) but not Python requests.
 
 This is the only way I found.
 
-## Preparation
+## Course taking bot
+
+### Preparation
 Before execute the program, you will have to install some requirements.
 
 1. Webdriver
@@ -30,12 +32,14 @@ Before execute the program, you will have to install some requirements.
    
    Edit the file and run the program again.
    
-## Execution
+### Execution
 
 Just execute the program `main.py`.
 
-## Notice
+### Notice
 
 It's better for you to keep the browser on the top of your desk.
 
 Otherwise, it went wrong sometimes and I'm not sure about the reason.
+
+## Course vacancy monitor
