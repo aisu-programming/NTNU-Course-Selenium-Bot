@@ -1,4 +1,4 @@
-tensorflow
+tensorflow==2.4.0
 Pillow
 selenium
 selenium-wire

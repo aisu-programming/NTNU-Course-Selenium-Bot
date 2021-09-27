@@ -4,7 +4,7 @@ import time
 import winsound
 import datetime
 import numpy as np
-from model import id_to_word, resize_image
+from model import id_to_word, process_image
 
 
 """ Functions """
@@ -100,7 +100,7 @@ def get_validate_code_img(driver):
     for request in reversed(driver.requests):
         if "RandImage" in request.url:
             if request.response == None: return None
-            else: return resize_image(io.BytesIO(request.response.body))
+            else: return process_image(io.BytesIO(request.response.body))
 
 
 def my_predict(model, image):
@@ -127,7 +127,7 @@ def process_validate_code(validate_code):
 def my_time_str(start_time=None):
     if start_time is not None:
         interval = time.time() - start_time
-        return f"{datetime.datetime.now().strftime(f'%H:%M:%S')} - {int(interval//60):>2}min {int(interval%60):>2}sec"
+        return f"{datetime.datetime.now().strftime(f'%H:%M:%S')} | {int(interval//60):>2}min {int(interval%60):>2}sec"
     else:
         return f"{datetime.datetime.now().strftime(f'%H:%M:%S')}"
 

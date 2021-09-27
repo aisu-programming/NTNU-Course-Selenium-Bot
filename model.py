@@ -147,7 +147,7 @@ class MyModel(tf.keras.Model):
         return y
 
 
-def resize_image(img):
+def process_image(img):
     return Image.open(img).convert('L').resize((resize_width, resize_height))
 
 

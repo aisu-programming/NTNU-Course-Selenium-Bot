@@ -1,9 +1,9 @@
 """ Libraries """
 import os
 import time
-from selenium.common.exceptions import WebDriverException
-from seleniumwire import webdriver
 import random
+from seleniumwire import webdriver
+from selenium.common.exceptions import WebDriverException
 from utils import (
     BrowserStuckError,
     beep_sound, my_time_str,

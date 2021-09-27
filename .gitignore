@@ -4,6 +4,7 @@ __pycache__
 test*
 
 account.txt
+LineNotifyBot_AccessToken.txt
 
 *.zip
 *.exe

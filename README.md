@@ -40,6 +40,10 @@ Just execute the program `course-taking-bot.py`.
 
 Just execute the program `course-vacancy-monitor.py`.
 
+For those who want LINE Notifications, you can change the variable `LINE_NOTIFY_BOT` into `True`.
+
+And copy the AccessToken of your LINE Notify Bot into the file `LineNotifyBot_AccessToken.txt`.
+
 ## Notice
 
 It's better for you to keep the browser on the top of your desk.
