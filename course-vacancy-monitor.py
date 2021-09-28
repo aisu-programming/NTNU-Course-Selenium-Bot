@@ -2,12 +2,11 @@
 import os
 import time
 import random
-import requests
 from seleniumwire import webdriver
 from selenium.common.exceptions import WebDriverException
 from utils import (
     BrowserStuckError,
-    beep_sound, my_time_str,
+    beep_sound, send_LineNotification, my_time_str,
     click_and_wait, wait_and_find_element_by_id,
     login,
 )
@@ -47,19 +46,6 @@ def read_LineNotifyBot_AccessToken():
         print("\nThe file 'LineNotifyBot_AccessToken.txt' are created.")
         print("Please edit it before run this program again.\n")
         raise Exception
-
-
-def send_LineNotification(access_token, message):
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    params = {"message": message}
-    requests.post(
-        "https://notify-api.line.me/api/notify",
-        headers=headers, params=params
-    )
-    return
 
 
 def course_monitoring(driver, course_ids, access_token):

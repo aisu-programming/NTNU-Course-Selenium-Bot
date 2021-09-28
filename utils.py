@@ -2,6 +2,7 @@
 import io
 import time
 import winsound
+import requests
 import datetime
 import numpy as np
 from model import id_to_word, process_image
@@ -20,6 +21,19 @@ def beep_sound():
     for _ in range(5):
         winsound.Beep(800, 800)
         time.sleep(0.2)
+    return
+
+
+def send_LineNotification(access_token, message):
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    params = {"message": message}
+    requests.post(
+        "https://notify-api.line.me/api/notify",
+        headers=headers, params=params
+    )
     return
 
 
@@ -52,14 +66,14 @@ def wait_and_find_element_by_id(driver, id):
     
 
 def wait_appeared_element_by_id(driver):
-    for _ in range(20):
+    for _ in range(10):
         try:
-            driver.find_element_by_id("button-1017-btnEl")
+            driver.find_element_by_id("button-1017-btnEl")  # 「下一頁」按鈕
             return True
         except:
             pass
         try:
-            click_and_wait(driver.find_element_by_id("button-1005-btnEl"))  # 「OK」按鈕
+            driver.find_element_by_id("button-1005-btnEl")  # 「OK」按鈕
             return False
         except:
             time.sleep(0.5)
@@ -101,6 +115,7 @@ def get_validate_code_img(driver):
         if "RandImage" in request.url:
             if request.response == None: return None
             else: return process_image(io.BytesIO(request.response.body))
+    return None 
 
 
 def my_predict(model, image):
@@ -134,27 +149,37 @@ def my_time_str(start_time=None):
 
 def login(driver, username, password, model):
     driver.get("https://cos3s.ntnu.edu.tw/AasEnrollStudent/LoginCheckCtrl?language=TW")
-    wait_and_find_element_by_id(driver, "userid-inputEl").send_keys(username)
-    wait_and_find_element_by_id(driver, "password-inputEl").send_keys(password)
-    validate_code_img = get_validate_code_img(driver)
-    validate_code = my_predict(model, validate_code_img)
-    validate_code = process_validate_code(validate_code)
-    wait_and_find_element_by_id(driver, "validateCode-inputEl").send_keys(validate_code)
-    click_and_wait(wait_and_find_element_by_id(driver, "button-1016-btnEl"))  # 「登入」按鈕
 
     # 驗證碼: 正確 或 錯誤
     while True:
-        if wait_appeared_element_by_id(driver): break
-        else:
-            print(f"{my_time_str()} - Login: Validate code '{validate_code}' incorrect. Retry in 3 seconds.\n")
-            time.sleep(3)
-            click_and_wait(wait_and_find_element_by_id(driver, "redoValidateCodeButton-btnEl"))  # 「重新產生」按鈕
-            wait_and_find_element_by_id(driver, "password-inputEl").send_keys(password)
+        
+        # 驗證碼破圖
+        validate_code_img_broken_time = 0
+        while True:
             validate_code_img = get_validate_code_img(driver)
-            validate_code = my_predict(model, validate_code_img)
-            validate_code = process_validate_code(validate_code)
-            wait_and_find_element_by_id(driver, "validateCode-inputEl").send_keys(validate_code)
-            click_and_wait(wait_and_find_element_by_id(driver, "button-1016-btnEl"))  # 「登入」按鈕
+            if validate_code_img is not None: break
+            else:
+                click_and_wait(wait_and_find_element_by_id(driver, "redoValidateCodeButton-btnEl"))  # 「重新產生」按鈕
+                retry_time = validate_code_img_broken_time * 2 + 3
+                print(f"{my_time_str()} - Login: Validate code image broken. Retry in {retry_time} seconds.")
+                time.sleep(retry_time)
+                validate_code_img_broken_time += 1
+
+        validate_code = my_predict(model, validate_code_img)
+        validate_code = process_validate_code(validate_code)
+        wait_and_find_element_by_id(driver, "validateCode-inputEl").send_keys(validate_code)
+
+        wait_and_find_element_by_id(driver, "userid-inputEl").clear()
+        wait_and_find_element_by_id(driver, "userid-inputEl").send_keys(username)
+        wait_and_find_element_by_id(driver, "password-inputEl").send_keys(password)
+        click_and_wait(wait_and_find_element_by_id(driver, "button-1016-btnEl"))  # 「登入」按鈕
+
+        if wait_appeared_element_by_id(driver): break
+
+        click_and_wait(driver.find_element_by_id("button-1005-btnEl"))  # 「OK」按鈕
+        print(f"{my_time_str()} - Login: Validate code '{validate_code}' incorrect. Retry in 3 seconds.\n")
+        time.sleep(3)
+        click_and_wait(wait_and_find_element_by_id(driver, "redoValidateCodeButton-btnEl"))  # 「重新產生」按鈕
 
     click_and_wait(wait_and_find_element_by_id(driver, "button-1017-btnEl"))  # 「下一頁」按鈕
     wait_and_find_element_by_id(driver, "now")
