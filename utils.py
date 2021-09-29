@@ -1,5 +1,6 @@
 """ Libraries """
 import io
+import os
 import time
 import winsound
 import requests
@@ -35,6 +36,23 @@ def send_LineNotification(access_token, message):
         headers=headers, params=params
     )
     return
+
+
+def my_time_str(start_time=None):
+    if start_time is not None:
+        interval = time.time() - start_time
+        return f"{datetime.datetime.now().strftime(f'%H:%M:%S')} | {int(interval//60):>2}min {int(interval%60):>2}sec"
+    else:
+        return f"{datetime.datetime.now().strftime(f'%H:%M:%S')}"
+
+
+def wait_until_9_am():
+    while True:
+        hour = int(datetime.datetime.now().strftime(f'%H'))
+        if hour >= 9: break
+        os.system("cls")
+        print(f"{my_time_str()} | Waiting until 9 AM...\n")
+        time.sleep(1)
 
 
 def click_and_wait(element):
@@ -137,14 +155,6 @@ def process_validate_code(validate_code):
         elif validate_code[1] == '*': return number_1 * number_2
     else:
         return ''.join(validate_code)
-
-
-def my_time_str(start_time=None):
-    if start_time is not None:
-        interval = time.time() - start_time
-        return f"{datetime.datetime.now().strftime(f'%H:%M:%S')} | {int(interval//60):>2}min {int(interval%60):>2}sec"
-    else:
-        return f"{datetime.datetime.now().strftime(f'%H:%M:%S')}"
 
 
 def login(driver, username, password, model):

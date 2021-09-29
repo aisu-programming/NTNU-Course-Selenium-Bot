@@ -7,7 +7,7 @@ from selenium.common.exceptions import WebDriverException
 from utils import (
     BrowserStuckError,
     beep_sound, send_LineNotification, my_time_str,
-    click_and_wait, wait_and_find_element_by_id,
+    wait_until_9_am, click_and_wait, wait_and_find_element_by_id,
     login,
 )
 from model import load_MyModel
@@ -118,18 +118,19 @@ def main():
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument("--auto-open-devtools-for-tabs")
-    driver = webdriver.Chrome("chromedriver_win32/chromedriver.exe", chrome_options=options)
 
     while True:
+        wait_until_9_am()
+        driver = webdriver.Chrome("chromedriver_win32/chromedriver.exe", chrome_options=options)
         login(driver, username, password, model)
         # if LINE_NOTIFY_BOT: send_LineNotification(access_token, f"\nMonitor started.")
         course_monitoring(driver, course_ids, access_token)
         driver.delete_all_cookies()
+        driver.close()
         if len(course_ids) == 0: break
         time.sleep(10)
         print(f"\n{my_time_str()} - Restart a turn.\n")
 
-    driver.close()
     return
 
 

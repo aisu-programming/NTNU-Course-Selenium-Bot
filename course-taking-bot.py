@@ -134,18 +134,18 @@ def main():
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument("--auto-open-devtools-for-tabs")
-    driver = webdriver.Chrome("chromedriver_win32/chromedriver.exe", chrome_options=options)
 
     while True:
+        driver = webdriver.Chrome("chromedriver_win32/chromedriver.exe", chrome_options=options)
         login(driver, username, password, model)
         course_ids = course_taking(driver, course_ids, model)
         driver.delete_all_cookies()
+        driver.close()
         if len(course_ids) == 0: break
         time.sleep(10)
         print(f"\n{my_time_str()} - Restart a turn.\n")
 
     print("\n\nSuccess! Finish all course taking tasks!\n\n")
-    driver.close()
 
 
 """ Execution """
