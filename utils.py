@@ -46,6 +46,28 @@ def my_time_str(start_time=None):
         return f"{datetime.datetime.now().strftime(f'%H:%M:%S')}"
 
 
+def read_account():
+    try:
+        with open("account.txt", "r", encoding="utf-8") as txt_file:
+            lines = txt_file.readlines()
+            if len(lines) < 3: raise Exception
+            username = lines[0].strip('\n')
+            password = lines[1].strip('\n')
+            courses  = list(filter(lambda id: '#' not in id, [ id.strip('\n').strip() for id in lines[2:] ]))
+            if ' ' in courses[0]:
+                course_ids   = [ course.split(' ')[0] for course in courses ]
+                course_names = [ course.split(' ')[1] for course in courses ]
+            else:
+                course_ids   = courses
+                course_names = None
+            return username, password, course_ids, course_names
+    except:
+        with open("account.txt", "w", encoding="utf-8") as txt_file:
+            txt_file.write("UsernameHere\nPasswordHere\nCourse_1_Id [Course_1_Name]\nCourse_2_Id [Course_2_Name]...")
+        print("\nThe file 'account.txt' are created.")
+        print("Please edit it before run this program again.\n")
+
+
 def wait_until_9_am():
     while True:
         hour = int(datetime.datetime.now().strftime(f'%H'))

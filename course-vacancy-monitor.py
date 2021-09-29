@@ -6,7 +6,7 @@ from seleniumwire import webdriver
 from selenium.common.exceptions import WebDriverException
 from utils import (
     BrowserStuckError,
-    beep_sound, send_LineNotification, my_time_str,
+    beep_sound, send_LineNotification, my_time_str, read_account,
     wait_until_9_am, click_and_wait, wait_and_find_element_by_id,
     login,
 )
@@ -18,22 +18,6 @@ LINE_NOTIFY_BOT = False
 
 
 """ Functions """
-def read_account():
-    try:
-        with open("account.txt", "r", encoding="utf-8") as txt_file:
-            lines = txt_file.readlines()
-            if len(lines) < 3: raise Exception
-            username   = lines[0].strip('\n')
-            password   = lines[1].strip('\n')
-            course_ids = list(filter(lambda id: '#' not in id, [ id.strip('\n') for id in lines[2:] ]))
-        return username, password, course_ids
-    except:
-        with open("account.txt", "w", encoding="utf-8") as txt_file:
-            txt_file.write("UsernameHere\nPasswordHere\nCourseId1\nCourseId2...")
-        print("\nThe file 'account.txt' are created.")
-        print("Please edit it before run this program again.\n")
-
-
 def read_LineNotifyBot_AccessToken():
     try:
         with open("LineNotifyBot_AccessToken.txt", "r", encoding="utf-8") as txt_file:
@@ -48,17 +32,20 @@ def read_LineNotifyBot_AccessToken():
         raise Exception
 
 
-def course_monitoring(driver, course_ids, access_token):
+def course_monitoring(driver, access_token, course_ids, course_names=None):
 
     start_time = time.time()
-    if LINE_NOTIFY_BOT: send_LineNotification(access_token, f"\nStart a monitor turn.\nThe course ids list now:\n{course_ids}")
+    if LINE_NOTIFY_BOT:
+        message = "\nStart a monitor turn.\nThe course ids list now:"
+        for cn_i, cn in enumerate(course_names): message += f"\n  {cn_i+1}. {cn}"
+        send_LineNotification(access_token, message)
 
     click_and_wait(wait_and_find_element_by_id(driver, "notFull-inputEl"))  # 「未額滿課程」checkbox
 
     while True:
-        print(f"{my_time_str(start_time)} | The course ids list now:", course_ids, '\n')
+        print(f"{my_time_str(start_time)} | The course ids list now:", course_names, '\n')
         try:
-            for course_id in course_ids:
+            for ci_i, course_id in enumerate(course_ids):
                 wait_and_find_element_by_id(driver, "serialNo-inputEl").clear()
                 wait_and_find_element_by_id(driver, "serialNo-inputEl").send_keys(course_id)
                 time.sleep(0.2)
@@ -67,14 +54,15 @@ def course_monitoring(driver, course_ids, access_token):
                 table  = wait_and_find_element_by_id(driver, "gridview-1113-body")
                 trlist = table.find_elements_by_tag_name('tr')
                 if len(trlist):
-                    course_ids.remove(course_id)
-                    print(f"{my_time_str(start_time)} | Course '{course_id}' is available now!\n")
+                    print(f"{my_time_str(start_time)} | Course '{course_names[ci_i]}' is available now!\n")
                     if LINE_NOTIFY_BOT:
-                        send_LineNotification(access_token, f"\nCourse '{course_id}' is available now!")
+                        send_LineNotification(access_token, f"\nCourse '{course_names[ci_i]}' is available now!")
+                    course_ids.remove(course_id)
+                    if course_names is not None: course_names.remove(course_names[ci_i])
                     beep_sound()
                 else:
                     random_second = 3 + 2 * random.random()
-                    print(f"{my_time_str(start_time)} | Course '{course_id}' is full. Sleep for {random_second:.2} seconds.\n")
+                    print(f"{my_time_str(start_time)} | Course '{course_names[ci_i]}' is full. Sleep for {random_second:.2} seconds.\n")
                     time.sleep(random_second)
 
                 if time.time() - start_time > 1170: break  # 19min 30sec
@@ -101,7 +89,7 @@ def main():
         return
 
     # Read username, password and course ids
-    try   : username, password, course_ids = read_account()
+    try   : username, password, course_ids, course_names = read_account()
     except: return
 
     # Read LINE Notify Bot auth
@@ -123,8 +111,7 @@ def main():
         wait_until_9_am()
         driver = webdriver.Chrome("chromedriver_win32/chromedriver.exe", chrome_options=options)
         login(driver, username, password, model)
-        # if LINE_NOTIFY_BOT: send_LineNotification(access_token, f"\nMonitor started.")
-        course_monitoring(driver, course_ids, access_token)
+        course_monitoring(driver, access_token, course_ids, course_names)
         driver.delete_all_cookies()
         driver.close()
         if len(course_ids) == 0: break

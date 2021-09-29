@@ -6,8 +6,8 @@ from seleniumwire import webdriver
 from selenium.common.exceptions import WebDriverException
 from utils import (
     BrowserStuckError,
-    beep_sound, my_time_str,
-    click_and_wait, wait_and_find_element_by_id, wait_element_text_by_id,
+    beep_sound, my_time_str, read_account,
+    wait_until_9_am, click_and_wait, wait_and_find_element_by_id, wait_element_text_by_id,
     wait_for_validate_code_img, get_validate_code_img, wait_for_validate_code_button,
     my_predict, process_validate_code,
     login,
@@ -16,23 +16,7 @@ from model import load_MyModel
 
 
 """ Functions """
-def read_account():
-    try:
-        with open("account.txt", "r", encoding="utf-8") as txt_file:
-            lines = txt_file.readlines()
-            if len(lines) < 3: raise Exception
-            username   = lines[0].strip('\n')
-            password   = lines[1].strip('\n')
-            course_ids = list(filter(lambda id: '#' not in id, [ id.strip('\n') for id in lines[2:] ]))
-        return username, password, course_ids
-    except:
-        with open("account.txt", "w", encoding="utf-8") as txt_file:
-            txt_file.write("UsernameHere\nPasswordHere\nCourseId1\nCourseId2...")
-        print("\nThe file 'account.txt' are created.")
-        print("Please edit it before run this program again.\n")
-
-
-def course_taking(driver, course_ids, model):
+def course_taking(driver, model, course_ids, course_names=None):
 
     start_time = time.time()
 
@@ -123,22 +107,23 @@ def main():
               "And put the 'chromedriver.exe'. in 'chromedriver_win32'\n")
         return
 
+    # Read username, password and course ids
+    try:    username, password, course_ids, course_names = read_account()
+    except: return
+
     # Load predict model
     model = load_MyModel()
     model.summary()
-
-    # Read username, password and course ids
-    try:    username, password, course_ids = read_account()
-    except: return
 
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument("--auto-open-devtools-for-tabs")
 
     while True:
+        wait_until_9_am()
         driver = webdriver.Chrome("chromedriver_win32/chromedriver.exe", chrome_options=options)
         login(driver, username, password, model)
-        course_ids = course_taking(driver, course_ids, model)
+        course_ids = course_taking(driver, model, course_ids, course_names)
         driver.delete_all_cookies()
         driver.close()
         if len(course_ids) == 0: break
