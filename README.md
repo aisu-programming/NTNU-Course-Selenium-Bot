@@ -20,9 +20,9 @@ Before execute the program, you will have to install some requirements.
 
    Just type the command `pip install -r requirements.txt`.
    
-3. Weights file (`val_acc.h5`)
+3. Weights file (`val_loss.h5`)
 
-   You can download the weights file at [here](https://drive.google.com/file/d/1qdB1SECI-cwqbUQNbJ834EcRAX07i4Z5/view?usp=sharing).
+   You can download the weights file at [here](https://drive.google.com/file/d/16YL-915VVvY0bSMr2FiKhVnV19ipYF59/view?usp=sharing).
    
    And put it in the directory `weights`.
    

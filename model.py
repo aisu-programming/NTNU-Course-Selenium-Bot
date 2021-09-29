@@ -60,6 +60,11 @@ id_to_word = {
 resize_height, resize_width = 60, 216
 
 
+class Mish(tf.keras.layers.Layer):
+    def forward(self, x):
+        return x * tf.nn.softplus(x).tanh()
+
+
 class MyConv(tf.keras.layers.Layer):
     def __init__(self, filter, kernel_size, strides):
         super(MyConv, self).__init__()
@@ -102,9 +107,10 @@ class Detector(tf.keras.layers.Layer):
     def __init__(self):
         super(Detector, self).__init__()
         self.denses = [ tf.keras.Sequential([
-            tf.keras.layers.Dense(64, activation="relu"),
-            tf.keras.layers.Dense(32, activation="relu"),
-            tf.keras.layers.Dense(16, activation="relu"),
+            tf.keras.layers.Dense(64, activation=Mish()),
+            tf.keras.layers.Dense(32, activation=Mish()),
+            tf.keras.layers.Dense(16, activation=Mish()),
+            tf.keras.layers.Dense( 8, activation=Mish()),
         ]) for _ in range(4) ]
         self.detect = tf.keras.layers.Dense(class_num, activation="softmax")
 
@@ -158,8 +164,31 @@ def load_MyModel():
               "And make sure that you put it in the directory 'weights'.\n")
         raise Exception
     else:
-        dropout_rate = 0.955
-        model = MyModel(dropout_rate)
+        dropout_rate = 0.93
+        # model = MyModel(dropout_rate)
+        model = tf.keras.Sequential([
+            tf.keras.layers.Conv2D(  32, 3, strides=1, padding="same", activation=tf.nn.silu),
+            tf.keras.layers.MaxPool2D(padding="same"),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Conv2D(  64, 3, strides=1, padding="same", activation=tf.nn.silu),
+            tf.keras.layers.MaxPool2D(padding="same"),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Conv2D( 128, 3, strides=1, padding="same", activation=tf.nn.silu),
+            tf.keras.layers.MaxPool2D(padding="same"),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Conv2D( 256, 3, strides=1, padding="same", activation=tf.nn.silu),
+            tf.keras.layers.MaxPool2D(padding="same"),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Conv2D( 512, 3, strides=1, padding="same", activation=tf.nn.silu),
+            tf.keras.layers.MaxPool2D(padding="same"),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Conv2D(1024, 3, strides=1, padding="same", activation=tf.nn.silu),
+            tf.keras.layers.MaxPool2D(padding="same"),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dropout(rate=dropout_rate),
+            Detector(),
+        ])
         model.build(input_shape=(None, resize_height, resize_width, 1))
         model.load_weights("weights/val_acc.h5")
         return model
