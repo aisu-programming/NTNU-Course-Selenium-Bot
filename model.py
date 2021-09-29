@@ -158,8 +158,8 @@ def process_image(img):
 
 
 def load_MyModel():
-    if "val_acc.h5" not in os.listdir("weights"):
-        print("\nPlease download the weights file (val_acc.h5) first at here:\n" + 
+    if "val_loss.h5" not in os.listdir("weights"):
+        print("\nPlease download the weights file (val_loss.h5) first at here:\n" + 
               "https://drive.google.com/file/d/1qdB1SECI-cwqbUQNbJ834EcRAX07i4Z5/view?usp=sharing\n" + 
               "And make sure that you put it in the directory 'weights'.\n")
         raise Exception
@@ -190,5 +190,5 @@ def load_MyModel():
             Detector(),
         ])
         model.build(input_shape=(None, resize_height, resize_width, 1))
-        model.load_weights("weights/val_acc.h5")
+        model.load_weights("weights/val_loss.h5")
         return model
