@@ -26,7 +26,7 @@ Before execute the program, you will have to install some requirements.
    
    And put it in the directory `weights`.
    
-4. Account information (username & password) & ids of courses you wish to take
+4. Account information (username & password) & information of courses you wish to take
 
    Execute the program `course-taking-bot.py` or `course-vacancy-monitor.py`, and it will create a file named `account.txt`.
    
@@ -48,4 +48,4 @@ And copy the AccessToken of your LINE Notify Bot into the file `LineNotifyBot_Ac
 
 It's better for you to keep the browser on the top of your desk.
 
-Otherwise, it went wrong sometimes and I'm not sure about the reason.
+Otherwise, it went wrong sometimes and I'm not sure about the reason. Maybe it's an issue about rendering.
