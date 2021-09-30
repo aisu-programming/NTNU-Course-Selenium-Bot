@@ -33,11 +33,9 @@ Before execute the program, you will have to install some requirements.
    Edit the file and run the program again.
    
 ## Course taking bot
-
 Just execute the program `course-taking-bot.py`.
 
 ## Course vacancy monitor
-
 Just execute the program `course-vacancy-monitor.py`.
 
 For those who want LINE Notifications, you can change the variable `LINE_NOTIFY_BOT` into `True`.
@@ -45,7 +43,11 @@ For those who want LINE Notifications, you can change the variable `LINE_NOTIFY_
 And copy the AccessToken of your LINE Notify Bot into the file `LineNotifyBot_AccessToken.txt`.
 
 ## Notice
-
 It's better for you to keep the browser on the top of your desk.
 
 Otherwise, it went wrong sometimes and I'm not sure about the reason.
+
+## Apology
+I didn't wrote the logs & messages system very well because it's a little bit annoying.
+
+Feel free to fork this repository and edit to styles that you prefer.

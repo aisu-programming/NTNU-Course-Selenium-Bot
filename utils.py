@@ -63,7 +63,7 @@ def read_account():
             return username, password, course_ids, course_names
     except:
         with open("account.txt", "w", encoding="utf-8") as txt_file:
-            txt_file.write("UsernameHere\nPasswordHere\nCourse_1_Id [Course_1_Name]\nCourse_2_Id [Course_2_Name]...")
+            txt_file.write("UsernameHere\nPasswordHere\nCourse_1_Id Course_1_Name\nCourse_2_Id Course_2_Name...")
         print("\nThe file 'account.txt' are created.")
         print("Please edit it before run this program again.\n")
 

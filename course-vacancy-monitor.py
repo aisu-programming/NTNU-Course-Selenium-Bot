@@ -36,14 +36,22 @@ def course_monitoring(driver, access_token, course_ids, course_names=None):
 
     start_time = time.time()
     if LINE_NOTIFY_BOT:
-        message = "\nStart a monitor turn.\nThe course ids list now:"
-        for cn_i, cn in enumerate(course_names): message += f"\n  {cn_i+1}. {cn}"
+        message = "\nThe courses list now:"
+        if course_names is not None:
+            for i in range(len(course_ids)): message += f"\n    {i+1}. {course_ids[i]}: {course_names[i]}"
+        else:
+            for i in range(len(course_ids)): message += f"\n    {i+1}. {course_ids[i]}"
         send_LineNotification(access_token, message)
 
     click_and_wait(wait_and_find_element_by_id(driver, "notFull-inputEl"))  # 「未額滿課程」checkbox
 
     while True:
-        print(f"{my_time_str(start_time)} | The course ids list now:", course_names, '\n')
+        log = f"{my_time_str(start_time)} | The courses list now:\n"
+        if course_names is not None:
+            for i in range(len(course_ids)): log += f"    {i+1}. {course_ids[i]}: {course_names[i]}\n"
+        else:
+            for i in range(len(course_ids)): log += f"    {i+1}. {course_ids[i]}\n"
+        print(log)
         try:
             for ci_i, course_id in enumerate(course_ids):
                 wait_and_find_element_by_id(driver, "serialNo-inputEl").clear()
@@ -54,15 +62,15 @@ def course_monitoring(driver, access_token, course_ids, course_names=None):
                 table  = wait_and_find_element_by_id(driver, "gridview-1113-body")
                 trlist = table.find_elements_by_tag_name('tr')
                 if len(trlist):
-                    print(f"{my_time_str(start_time)} | Course '{course_names[ci_i]}' is available now!\n")
+                    print(f"{my_time_str(start_time)} | Course {course_id}: '{course_names[ci_i]}' is available now!\n")
                     if LINE_NOTIFY_BOT:
-                        send_LineNotification(access_token, f"\nCourse '{course_names[ci_i]}' is available now!")
+                        send_LineNotification(access_token, f"\nCourse {course_id}: '{course_names[ci_i]}' is available now!")
                     course_ids.remove(course_id)
                     if course_names is not None: course_names.remove(course_names[ci_i])
                     beep_sound()
                 else:
                     random_second = 3 + 2 * random.random()
-                    print(f"{my_time_str(start_time)} | Course '{course_names[ci_i]}' is full. Sleep for {random_second:.2} seconds.\n")
+                    print(f"{my_time_str(start_time)} | Course {course_id}: '{course_names[ci_i]}' is full. Sleep for {random_second:.2} seconds.\n")
                     time.sleep(random_second)
 
                 if time.time() - start_time > 1170: break  # 19min 30sec
