@@ -160,7 +160,7 @@ def process_image(img):
 def load_MyModel():
     if "val_loss.h5" not in os.listdir("weights"):
         print("\nPlease download the weights file (val_loss.h5) first at here:\n" + 
-              "https://drive.google.com/file/d/1qdB1SECI-cwqbUQNbJ834EcRAX07i4Z5/view?usp=sharing\n" + 
+              "https://drive.google.com/file/d/16YL-915VVvY0bSMr2FiKhVnV19ipYF59/view?usp=sharing\n" + 
               "And make sure that you put it in the directory 'weights'.\n")
         raise Exception
     else:

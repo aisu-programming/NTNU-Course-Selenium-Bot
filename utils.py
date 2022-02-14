@@ -77,7 +77,7 @@ def wait_until_9_am():
         time.sleep(1)
 
 
-def click_and_wait(element):
+def wait_to_click(element):
     for _ in range(25):
         try:
             element.click()
@@ -96,7 +96,7 @@ def wait_for_url(driver, url_content):
 
 
 def wait_and_find_element_by_id(driver, id):
-    for _ in range(25):
+    for _ in range(50):
         try:
             element = driver.find_element_by_id(id)
             return element
@@ -106,7 +106,7 @@ def wait_and_find_element_by_id(driver, id):
     
 
 def wait_appeared_element_by_id(driver):
-    for _ in range(10):
+    for _ in range(30):
         try:
             driver.find_element_by_id("button-1017-btnEl")  # 「下一頁」按鈕
             return True
@@ -121,7 +121,7 @@ def wait_appeared_element_by_id(driver):
 
 
 def wait_element_text_by_id(driver, id, texts):
-    for _ in range(25):
+    for _ in range(100):
         try:
             element = driver.find_element_by_id(id)
             for i, text in enumerate(texts):
@@ -191,7 +191,7 @@ def login(driver, username, password, model):
             validate_code_img = get_validate_code_img(driver)
             if validate_code_img is not None: break
             else:
-                click_and_wait(wait_and_find_element_by_id(driver, "redoValidateCodeButton-btnEl"))  # 「重新產生」按鈕
+                wait_to_click(wait_and_find_element_by_id(driver, "redoValidateCodeButton-btnEl"))  # 「重新產生」按鈕
                 retry_time = validate_code_img_broken_time * 2 + 3
                 print(f"{my_time_str()} - Login: Validate code image broken. Retry in {retry_time} seconds.")
                 time.sleep(retry_time)
@@ -204,18 +204,23 @@ def login(driver, username, password, model):
         wait_and_find_element_by_id(driver, "userid-inputEl").clear()
         wait_and_find_element_by_id(driver, "userid-inputEl").send_keys(username)
         wait_and_find_element_by_id(driver, "password-inputEl").send_keys(password)
-        click_and_wait(wait_and_find_element_by_id(driver, "button-1016-btnEl"))  # 「登入」按鈕
+        wait_to_click(wait_and_find_element_by_id(driver, "button-1016-btnEl"))  # 「登入」按鈕
 
         if wait_appeared_element_by_id(driver): break
 
-        click_and_wait(driver.find_element_by_id("button-1005-btnEl"))  # 「OK」按鈕
+        wait_to_click(wait_and_find_element_by_id(driver, "button-1005-btnEl"))  # 「OK」按鈕
         print(f"{my_time_str()} - Login: Validate code '{validate_code}' incorrect. Retry in 3 seconds.\n")
         time.sleep(3)
-        click_and_wait(wait_and_find_element_by_id(driver, "redoValidateCodeButton-btnEl"))  # 「重新產生」按鈕
+        wait_to_click(wait_and_find_element_by_id(driver, "redoValidateCodeButton-btnEl"))  # 「重新產生」按鈕
 
-    click_and_wait(wait_and_find_element_by_id(driver, "button-1017-btnEl"))  # 「下一頁」按鈕
+    try:
+        wait_to_click(wait_and_find_element_by_id(driver, "button-1005-btnEl"))  # 教程學生的「ok」按鈕
+    except:
+        pass
+
+    wait_to_click(wait_and_find_element_by_id(driver, "button-1017-btnEl"))  # 「下一頁」按鈕
     wait_and_find_element_by_id(driver, "now")
     driver.execute_script("document.getElementById('now').parentElement.remove()")  # 移除計時器
     driver.switch_to.frame(wait_and_find_element_by_id(driver, "stfseldListDo"))
-    click_and_wait(wait_and_find_element_by_id(driver, "add-btnEl"))  # 「加選」按鈕
+    wait_to_click(wait_and_find_element_by_id(driver, "add-btnEl"))  # 「加選」按鈕
     return

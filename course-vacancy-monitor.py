@@ -7,14 +7,14 @@ from selenium.common.exceptions import WebDriverException
 from utils import (
     BrowserStuckError,
     beep_sound, send_LineNotification, my_time_str, read_account,
-    wait_until_9_am, click_and_wait, wait_and_find_element_by_id,
+    wait_until_9_am, wait_to_click, wait_and_find_element_by_id,
     login,
 )
 from model import load_MyModel
 
 
 """ Parameters """
-LINE_NOTIFY_BOT = False
+LINE_NOTIFY_BOT = True
 
 
 """ Functions """
@@ -43,7 +43,7 @@ def course_monitoring(driver, access_token, course_ids, course_names=None):
             for i in range(len(course_ids)): message += f"\n    {i+1}. {course_ids[i]}"
         send_LineNotification(access_token, message)
 
-    click_and_wait(wait_and_find_element_by_id(driver, "notFull-inputEl"))  # 「未額滿課程」checkbox
+    wait_to_click(wait_and_find_element_by_id(driver, "notFull-inputEl"))  # 「未額滿課程」checkbox
 
     while True:
         log = f"{my_time_str(start_time)} | The courses list now:\n"
@@ -57,7 +57,7 @@ def course_monitoring(driver, access_token, course_ids, course_names=None):
                 wait_and_find_element_by_id(driver, "serialNo-inputEl").clear()
                 wait_and_find_element_by_id(driver, "serialNo-inputEl").send_keys(course_id)
                 time.sleep(0.2)
-                click_and_wait(wait_and_find_element_by_id(driver, "button-1059-btnEl"))  # 「查詢」按鈕
+                wait_to_click(wait_and_find_element_by_id(driver, "button-1059-btnEl"))  # 「查詢」按鈕
                 
                 table  = wait_and_find_element_by_id(driver, "gridview-1113-body")
                 trlist = table.find_elements_by_tag_name('tr')

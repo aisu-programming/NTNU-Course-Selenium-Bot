@@ -7,7 +7,7 @@ from selenium.common.exceptions import WebDriverException
 from utils import (
     BrowserStuckError,
     beep_sound, my_time_str, read_account,
-    wait_until_9_am, click_and_wait, wait_and_find_element_by_id, wait_element_text_by_id,
+    wait_until_9_am, wait_to_click, wait_and_find_element_by_id, wait_element_text_by_id,
     wait_for_validate_code_img, get_validate_code_img, wait_for_validate_code_button,
     my_predict, process_validate_code,
     login,
@@ -34,14 +34,14 @@ def course_taking(driver, model, course_ids, course_names=None):
                     # 驗證碼破圖
                     validate_code_img_broken_time = 0
                     while True:
-                        click_and_wait(driver.find_element_by_id("button-1060-btnEl"))  # 「開課序號直接加選儲存」按鈕
+                        wait_to_click(driver.find_element_by_id("button-1060-btnEl"))  # 「開課序號直接加選儲存」按鈕
                         wait_for_validate_code_img(driver)
                         validate_code_img = get_validate_code_img(driver)
                         if validate_code_img is not None:
                             break
                         else:
-                            click_and_wait(wait_for_validate_code_button(driver, "cancel"))  # 「取消」按鈕
-                            click_and_wait(wait_and_find_element_by_id(driver, "button-1005-btnIconEl"))  # 「OK」按鈕
+                            wait_to_click(wait_for_validate_code_button(driver, "cancel"))  # 「取消」按鈕
+                            wait_to_click(wait_and_find_element_by_id(driver, "button-1005-btnIconEl"))  # 「OK」按鈕
                             retry_time = validate_code_img_broken_time * 2 + 3
                             print(f"{my_time_str(start_time)} - Course {course_id}: Validate code image broken. Retry in {retry_time} seconds.")
                             time.sleep(retry_time)
@@ -50,12 +50,12 @@ def course_taking(driver, model, course_ids, course_names=None):
                     validate_code = my_predict(model, validate_code_img)
                     validate_code = process_validate_code(validate_code)
                     wait_and_find_element_by_id(driver, "valid-inputEl").send_keys(validate_code)
-                    click_and_wait(wait_for_validate_code_button(driver, "confirm"))  # 「確認」按鈕
+                    wait_to_click(wait_for_validate_code_button(driver, "confirm"))  # 「確認」按鈕
 
                     condition = wait_element_text_by_id(driver, "messagebox-1001-displayfield-inputEl", ["驗證碼錯誤", "額滿", "衝堂", "重複登記", "儲存成功"])
                     if condition == 0:  # 驗證碼錯誤
                         print(f"{my_time_str(start_time)} - Course {course_id}: Validate code '{validate_code}' incorrect. Retry in 3 seconds.")
-                        click_and_wait(wait_and_find_element_by_id(driver, "button-1005-btnIconEl"))  # 「OK」按鈕
+                        wait_to_click(wait_and_find_element_by_id(driver, "button-1005-btnIconEl"))  # 「OK」按鈕
                         time.sleep(3)
 
                     elif condition == 1:  # 額滿
@@ -80,7 +80,7 @@ def course_taking(driver, model, course_ids, course_names=None):
                         course_ids.remove(course_id)
                         break
                 
-                click_and_wait(wait_and_find_element_by_id(driver, "button-1005-btnIconEl"))  # 「OK」按鈕
+                wait_to_click(wait_and_find_element_by_id(driver, "button-1005-btnIconEl"))  # 「OK」按鈕
                 random_second = 5 + 5 * random.random()
                 print(f"{my_time_str(start_time)} - Sleep for {random_second:.2} seconds.\n")
                 time.sleep(random_second)
